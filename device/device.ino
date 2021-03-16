@@ -5,7 +5,7 @@
 
 
 LightController lightController;    //a controller for the LEDs 
-WiFiController wifiController;
+WiFiController wifiController;      //a controller for the WiFi server
 
 //setup runs when the device is started
 void setup()
@@ -21,10 +21,4 @@ void setup()
 
 //this is the main loop of the program
 void loop()
-{
-    //react to incoming connections
-    wifiController.handleClient();
-    //listen to 
-    delay(100);
-    
-}
+{      }

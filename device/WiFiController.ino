@@ -1,5 +1,9 @@
 #include "WiFiController.h"
 
+
+auto emptyGet=[](AsyncWebServerRequest *request) {};
+auto emptyPost=[](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {};
+
 void WiFiController::setUpServer()
 {
     //connect to wifi
@@ -10,31 +14,53 @@ void WiFiController::setUpServer()
         delay(500);
         Serial.print(".");
     }
+    Serial.println(WiFi.localIP()); //print the local IP
+
+    //set the api
+
+    //read the data in a POST request to serial
+    server_.on(
+        "/post",
+        HTTP_POST,
+        emptyGet,
+        NULL,
+        [](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {
+            for (size_t i = 0; i < len; i++)
+            {
+                Serial.write(data[i]);
+            }
+
+            Serial.println();
+
+            request->send(200);//OK
+        });
+    //set lights to work mode
+    server_.on(
+        "/W",
+        HTTP_GET,
+        [this](AsyncWebServerRequest *request) {
+            lightController_->ledWork();
+            request->send(200);//OK
+        },
+        NULL,
+    emptyPost);
+    //set lights to rest mode
+    server_.on(
+        "/R",
+        HTTP_GET,
+        [this](AsyncWebServerRequest *request) {
+            lightController_->ledRest();
+            request->send(200);//OK
+        },
+        NULL,
+        emptyPost);
     //begin the server that listens to incoming connections
     server_.begin();
-    //advertise the service to the network
-    advertise();
 }
 
-void WiFiController::advertise()
-{
-    //Start the service
-    if (MDNS.begin(serviceName))
-    {
-        MDNS.addService("http", "tcp", 23);
-    }
-    else
-    {
-        //something went wrong, stalling
-        while (true)
-        {
-            Serial.println("Error setting up MDNS responder");
-            delay(1000);
-        }
-    }
-}
 
-void WiFiController::handleClient()
+
+/* void WiFiController::handleClient()
 {
     //check for incoming connections
     WiFiClient client = server_.available();
@@ -78,7 +104,8 @@ void WiFiController::handleClient()
     } //if(client)
 }
 
-void WiFiController::handleRequest(String line)
+ */
+/* void WiFiController::handleRequest(String line)
 {
     if (line.endsWith("GET /T"))
     {
@@ -105,3 +132,4 @@ void WiFiController::handleRequest(String line)
         lightController_->changeBrightness(-0x0F);
     }
 }
+ */
