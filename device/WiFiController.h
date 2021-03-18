@@ -4,6 +4,8 @@
 #include <AsyncTCP.h>
 #include <ESPAsyncWebServer.h>
 #include <ArduinoJson.h>
+#include <string.h>
+#include <FastLED.h>
 #include "wificredentials.h" // WiFi credentials of your network
 #include "variables.h"
 #include "LightController.h"

@@ -1,6 +1,4 @@
 #include "WiFiController.h"
-#include <string.h>
-
 
 auto emptyGet = [](AsyncWebServerRequest *request) {};
 auto emptyPost = [](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {};
@@ -21,7 +19,7 @@ void WiFiController::setUpServer()
 
     //read the data in a POST request to serial
     server_.on(
-        "/asd",
+        "/test",
         HTTP_POST,
         emptyGet,
         NULL,
@@ -39,6 +37,92 @@ void WiFiController::setUpServer()
             Serial.println();
 
             request->send(200); //OK
+        });
+    //Set the light to a colour defined in JSON {"hue":int,"saturation":int,"brightness":int}
+    server_.on(
+        "/colour",
+        HTTP_POST,
+        emptyGet,
+        NULL,
+        [this](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {
+            
+            StaticJsonDocument<200> doc; //initialise JSON
+            //parse the JSON and check for errors
+            if (!deserializeJson(doc, data))
+            {
+                //read the values
+                int hue = doc["hue"];
+                int saturation = doc["saturation"];
+                int brightness = doc["brightness"];
+                
+                //change the current colour
+                lightController_->updateColour(CHSV(hue, saturation, brightness));
+
+                //print to serial
+                char msg[50];
+                sprintf(msg,"(h,s,b) value updated to ( %d, %d, %d)",hue,saturation,brightness);
+                Serial.println(msg);
+                request->send(200);//OK
+            }
+            else
+            {
+                Serial.println("error parsing the JSON");
+                request->send(400);//Bad request
+            };
+        });
+
+    //change the colour of the work mode
+    server_.on(
+        "/setWcolour",
+        HTTP_POST,
+        emptyGet,
+        NULL,
+        [this](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {
+            StaticJsonDocument<200> doc;
+            if (!deserializeJson(doc, data))
+            {
+                int hue = doc["hue"];
+                int saturation = doc["saturation"];
+                int brightness = doc["brightness"];
+                //change the colour of the work mode
+                lightController_->colours.work = CHSV(hue, saturation, brightness);
+                //if the mode is on, show the new colour
+                if(lightController_->getMode() == work){
+                    lightController_->updateColour(CHSV(hue, saturation, brightness));
+                }
+              request->send(200);//OK
+            }
+            else
+            {
+                Serial.println("error parsing the JSON");
+                request->send(400);//Bad request
+            };
+        });
+
+    //change the colour of the rest mode
+    server_.on(
+        "/setRcolour",
+        HTTP_POST,
+        emptyGet,
+        NULL,
+        [this](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {
+            StaticJsonDocument<200> doc;
+            if (!deserializeJson(doc, data))
+            {
+                int hue = doc["hue"];
+                int saturation = doc["saturation"];
+                int brightness = doc["brightness"];
+                lightController_->colours.rest = CHSV(hue, saturation, brightness);
+                if(lightController_->getMode() == rest){
+                    lightController_->updateColour(CHSV(hue, saturation, brightness));
+                }
+              request->send(200);//OK
+            }
+            else
+            {
+                Serial.println("error parsing the JSON");
+                request->send(400);//Bad request
+            }; 
         });
     //set lights to work mode
     server_.on(

@@ -17,6 +17,7 @@ LightController::LightController()
     }
 }  */
 
+//put the given colour to all of the leds (FastLED.show() must be called separately)
 void LightController::fillStatic(CRGB colour)
 {
     for (int i = 0; i < NUM_LEDS; ++i)
@@ -39,28 +40,43 @@ void LightController::start()
     FastLED.show(); */
 }
 
-void LightController::changeBrightness(char b)
+void LightController::changeBrightness(int b)
 {
     state.brightness += b;
     FastLED.setBrightness(state.brightness);
     FastLED.show();
 }
 
+void LightController::updateColour(CRGB colour)
+{
+    fillStatic(colour);
+    FastLED.show();
+}
+
+void LightController::setMode(Mode mode){
+    state.mode=mode;
+}
+
+//switch between the modes
 void LightController::ledOff()
 {
+    setMode(off);
     fillStatic(colours.off);
     FastLED.show();
 }
 void LightController::ledRest()
 {
+    setMode(rest);
     fillStatic(colours.rest);
     FastLED.show();
 }
 void LightController::ledWork()
 {
+    setMode(work);
     fillStatic(colours.work);
     FastLED.show();
 }
+
 
 void LightController::onboardOn()
 {

@@ -5,6 +5,7 @@
 #define LED_DATA 32
 #define LED_BUILTIN 2
 
+//default colours for the modes
 struct Colours{
     CRGB off=CHSV(0x00,0x00,0x00);
     CRGB work=CHSV(0x00,0x00,0xFF);

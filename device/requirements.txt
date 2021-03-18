@@ -1,3 +1,8 @@
-https://techtutorialsx.com/2017/12/01/esp32-arduino-asynchronous-http-webserver/
+FastLED library for controlling the LEDs
 
-install library ArduinoJson https://arduinojson.org/v6/example/parser/
+WiFi library for connecting to WiFi
+
+AsyncTCP and ESPAsyncWebServer for listening to HTTP requests https://techtutorialsx.com/2017/12/01/esp32-arduino-asynchronous-http-webserver/
+
+
+ArduinoJson library for parsing the JSON https://arduinojson.org/v6/example/parser/

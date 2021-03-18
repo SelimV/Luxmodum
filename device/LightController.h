@@ -24,24 +24,33 @@ class LightController
 {
 private:
     State state;
-    Colours colours;
     CRGB leds[NUM_LEDS];
-    void fillFromPalette();
-    void fillStatic(CRGB);
+    //void fillFromPalette();
+    void fillStatic(CRGB);//put the given colour to all of the leds (FastLED.show() must be called separately)
+    void setMode(Mode);
 
 public:
+    Colours colours;
     LightController();            //constructor
     ~LightController() = default; //destructor
 
     //setup the LEDs, to be called during the setup
     void start();
-    void changeBrightness(char);
+
+    //increase the brightness by a given amount
+    void changeBrightness(int);
+
+    //show a given colour
+    void updateColour(CRGB);
     
+    //switch between the modes
     void ledOff();
     void ledRest();
     void ledWork();
 
-    
+
+    Mode getMode(){return state.mode;};//getter
+
     //use the onboard LED
     void onboardOn();
     void onboardOff();
