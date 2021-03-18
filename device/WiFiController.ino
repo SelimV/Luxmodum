@@ -33,7 +33,6 @@ void WiFiController::setUpServer()
                     Serial.write(name[i]);
                 }
             };
-
             Serial.println();
 
             request->send(200); //OK
@@ -141,6 +140,19 @@ void WiFiController::setUpServer()
         [this](AsyncWebServerRequest *request) {
             lightController_->ledRest();
             request->send(200); //OK
+        },
+        NULL,
+        emptyPost);
+    //get the current mode of the device
+    server_.on(
+        "/mode",
+        HTTP_GET,
+        [this](AsyncWebServerRequest *request) {
+            //create a JSON
+            char json[50];
+            sprintf(json,"{\"mode\": %d}",lightController_->getMode());
+            //send response
+            request->send(200,"application/json",json); //OK
         },
         NULL,
         emptyPost);

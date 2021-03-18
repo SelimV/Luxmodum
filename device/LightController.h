@@ -4,9 +4,9 @@
 
 enum Mode
 {
-    off,
-    work,
-    rest
+    off=0,
+    work=1,
+    rest=2
 };
 
 //the current state of the LEDs
