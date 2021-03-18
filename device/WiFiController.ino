@@ -1,8 +1,9 @@
 #include "WiFiController.h"
+#include <string.h>
 
 
-auto emptyGet=[](AsyncWebServerRequest *request) {};
-auto emptyPost=[](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {};
+auto emptyGet = [](AsyncWebServerRequest *request) {};
+auto emptyPost = [](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {};
 
 void WiFiController::setUpServer()
 {
@@ -20,19 +21,24 @@ void WiFiController::setUpServer()
 
     //read the data in a POST request to serial
     server_.on(
-        "/post",
+        "/asd",
         HTTP_POST,
         emptyGet,
         NULL,
         [](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {
-            for (size_t i = 0; i < len; i++)
+            StaticJsonDocument<200> doc;
+            if (!deserializeJson(doc, data))
             {
-                Serial.write(data[i]);
-            }
+                const char *name = doc["name"];
+                for (size_t i = 0; i < strlen(name); i++)
+                {
+                    Serial.write(name[i]);
+                }
+            };
 
             Serial.println();
 
-            request->send(200);//OK
+            request->send(200); //OK
         });
     //set lights to work mode
     server_.on(
@@ -40,25 +46,23 @@ void WiFiController::setUpServer()
         HTTP_GET,
         [this](AsyncWebServerRequest *request) {
             lightController_->ledWork();
-            request->send(200);//OK
+            request->send(200); //OK
         },
         NULL,
-    emptyPost);
+        emptyPost);
     //set lights to rest mode
     server_.on(
         "/R",
         HTTP_GET,
         [this](AsyncWebServerRequest *request) {
             lightController_->ledRest();
-            request->send(200);//OK
+            request->send(200); //OK
         },
         NULL,
         emptyPost);
     //begin the server that listens to incoming connections
     server_.begin();
 }
-
-
 
 /* void WiFiController::handleClient()
 {

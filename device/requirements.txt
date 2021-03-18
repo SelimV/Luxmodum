@@ -1,0 +1,3 @@
+https://techtutorialsx.com/2017/12/01/esp32-arduino-asynchronous-http-webserver/
+
+install library ArduinoJson https://arduinojson.org/v6/example/parser/

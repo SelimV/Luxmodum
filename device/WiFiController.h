@@ -3,6 +3,7 @@
 #include <WiFi.h>
 #include <AsyncTCP.h>
 #include <ESPAsyncWebServer.h>
+#include <ArduinoJson.h>
 #include "wificredentials.h" // WiFi credentials of your network
 #include "variables.h"
 #include "LightController.h"
