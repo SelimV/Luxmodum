@@ -29,7 +29,7 @@ private:
     long nextSwitch_;
     
     //void fillFromPalette();
-    void fillStatic_(CRGB); //put the given colour to all of the leds (FastLED.show() must be called separately)
+    void fillStatic_(CHSV); //put the given colour to all of the leds (FastLED.show() must be called separately)
 
 public:
     Colours colours;
@@ -43,7 +43,7 @@ public:
     void changeBrightness(int);
 
     //show a given colour
-    void updateColour(CRGB);
+    void updateColour(CHSV);
 
     //switch between the modes
     void ledOff();

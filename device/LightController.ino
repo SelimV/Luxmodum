@@ -18,8 +18,9 @@ LightController::LightController()
 }  */
 
 //put the given colour to all of the leds (FastLED.show() must be called separately)
-void LightController::fillStatic_(CRGB colour)
+void LightController::fillStatic_(CHSV colour)
 {
+    colours.current=colour;
     for (int i = 0; i < NUM_LEDS; ++i)
     {
         leds_[i] = colour;
@@ -47,7 +48,7 @@ void LightController::changeBrightness(int b)
     FastLED.show();
 }
 
-void LightController::updateColour(CRGB colour)
+void LightController::updateColour(CHSV colour)
 {
     fillStatic_(colour);
     FastLED.show();
@@ -135,17 +136,38 @@ String LightController::details(){
             json += max((int)(nextSwitch_-millis())/TIME_UNIT,0);
     json += "}";
 
-    /* json += ",\"colours\":";
+    json += ",\"colours\":";
      json += "{";
             json += "\"work\":";
                 json += "{";
                         json += "\"hue\":";
-                        json += colours.rest;
+                        json += colours.work.h;
+                        json += ",\"saturation\":";
+                        json += colours.work.s;
+                        json += ",\"brightness\":";
+                        json += colours.work.v;
                 json += "}";
             
             json += ",\"rest\":";
+                json += "{";
+                        json += "\"hue\":";
+                        json += colours.rest.h;
+                        json += ",\"saturation\":";
+                        json += colours.rest.s;
+                        json += ",\"brightness\":";
+                        json += colours.rest.v;
+                json += "}";
+            json += ",\"current\":";
+                json += "{";
+                        json += "\"hue\":";
+                        json += colours.current.h;
+                        json += ",\"saturation\":";
+                        json += colours.current.s;
+                        json += ",\"brightness\":";
+                        json += colours.current.v;
+                json += "}";
             
-    json += "}"; */
+    json += "}";
 
     json += "}";
     return json;
