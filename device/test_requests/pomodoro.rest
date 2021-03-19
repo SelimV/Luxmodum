@@ -2,7 +2,7 @@ POST http://192.168.1.168/pomodoro
 Content-Type: application/json
 
 {
-    "workTime": 25,
+    "workTime": 10,
     "restTime": 5,
     "rounds": 4
 }

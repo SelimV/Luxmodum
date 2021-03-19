@@ -1,7 +1,8 @@
 #pragma once
 #include "variables.h"
 #include <FastLED.h>
-
+#include <Arduino.h>
+#include <string.h>
 enum Mode
 {
     off = 0,
@@ -28,7 +29,7 @@ private:
     long nextSwitch_;
     
     //void fillFromPalette();
-    void fillStatic_(CRGB); //put the given colour to all of the leds (FastLED.show() must be called separately)
+    void fillStatic_(CHSV); //put the given colour to all of the leds (FastLED.show() must be called separately)
 
 public:
     Colours colours;
@@ -42,7 +43,7 @@ public:
     void changeBrightness(int);
 
     //show a given colour
-    void updateColour(CRGB);
+    void updateColour(CHSV);
 
     //switch between the modes
     void ledOff();
@@ -62,7 +63,8 @@ public:
     //change modes and update counters depending on the time passed
     void updatePomodoro();
     
-
+    //returns a JSON formatted string of details, including current mode, 
+    String details();
     //onboard LED functions for debugging -------------------------
     void onboardOn();
     void onboardOff();

@@ -50,7 +50,17 @@ void WiFiController::setUpServer()
         HTTP_GET,
         [this](AsyncWebServerRequest *request) {
             lightController_->ledRest();
-            request->send(200);//OK
+            request->send(200); //OK
+        },
+        NULL,
+        emptyPost);
+    //get the current mode of the device, colours, etc.
+    server_.on(
+        "/details",
+        HTTP_GET,
+        [this](AsyncWebServerRequest *request) {
+            //send response
+            request->send(200,"application/json",lightController_->details()); //OK
         },
         NULL,
         emptyPost);

@@ -10,14 +10,15 @@
 #define POMODORO_WORK 25
 #define POMODORO_REST 5
 #define POMODORO_ROUNDS 4
-//times in minutes: 60000 millisecond in a minute
-#define TIME_UNIT 600 
+//times in seconds: 1000 millisecond in a second
+#define TIME_UNIT 1000 
 
 //default colours for the modes
 struct Colours{
-    CRGB off=CHSV(0x00,0x00,0x00);
-    CRGB work=CHSV(0x00,0x00,0xFF);
-    CRGB rest=CHSV(0xC0,0xFF,0xFF);
+    CHSV off=CHSV(0x00,0x00,0x00);
+    CHSV work=CHSV(0x00,0x00,0xFF);
+    CHSV rest=CHSV(0xC0,0xFF,0xFF);
+    CHSV current=CHSV(0x00,0x00,0xFF);
 };
 
 //FastLED defines
