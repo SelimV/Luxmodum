@@ -4,7 +4,7 @@
 //define the pin numbers
 #define LED_DATA 32
 #define LED_BUILTIN 2
-#define BUTTON 4
+#define BUTTON 25
 
 //default pomodoro parameters
 #define POMODORO_WORK 25

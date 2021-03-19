@@ -45,34 +45,49 @@ void LightController::start()
 void LightController::changeBrightness(int b)
 {
     brightness_ += b;
+    delay(10);
     FastLED.setBrightness(brightness_);
+    delay(10);
     FastLED.show();
+    delay(10);
 }
 
 void LightController::updateColour(CHSV colour)
 {
+    delay(10);
     fillStatic_(colour);
+    delay(10);
     FastLED.show();
+    delay(10);
 }
 
 //switch between the modes
 void LightController::ledOff()
 {
     mode_ = off;
+    delay(10);
     fillStatic_(colours.off);
+    delay(10);
     FastLED.show();
+    delay(10);
 }
 void LightController::ledRest()
 {
     mode_ = rest;
+    delay(10);
     fillStatic_(colours.rest);
+    delay(10);
     FastLED.show();
+    delay(10);
 }
 void LightController::ledWork()
 {
     mode_ = work;
+    delay(10);
     fillStatic_(colours.work);
+    delay(10);
     FastLED.show();
+    delay(10);
 }
 
 //pomodoro functions -----------------------------------------
@@ -89,7 +104,6 @@ void LightController::startPomodoro(int rounds)
 }
 void LightController::stopPomodoro()
 {
-    ledRest();
     roundsLeft_ = 0;
 }
 bool LightController::checkPomodoro()
@@ -202,11 +216,11 @@ void LightController::onboardToggle()
 //button functions----------------------------------
 void LightController::readButton()
 {
-    buttonState = digitalRead(BUTTON);
+    auto buttonState = digitalRead(BUTTON);
     if (buttonState == HIGH)
     {
-        toggleState();
         stopPomodoro();
+        toggleState();
         delay(200);
     }
 }
