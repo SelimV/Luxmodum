@@ -2,7 +2,7 @@ POST http://192.168.1.168/setRcolour
 Content-Type: application/json
 
 {
-    "hue": 150,
+    "hue": 0,
     "saturation": 255,
     "brightness": 255
 }

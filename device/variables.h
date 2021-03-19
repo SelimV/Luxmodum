@@ -9,8 +9,8 @@
 #define POMODORO_WORK 25
 #define POMODORO_REST 5
 #define POMODORO_ROUNDS 4
-//times in minutes: 60000 millisecond in a minute
-#define TIME_UNIT 600 
+//times in seconds: 1000 millisecond in a second
+#define TIME_UNIT 1000 
 
 //default colours for the modes
 struct Colours{

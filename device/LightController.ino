@@ -115,6 +115,42 @@ void LightController::updatePomodoro()
     }
 }
 
+//returns a JSON formatted string of details, including current mode, 
+String LightController::details(){
+    String json("{");
+    json += "\"mode\":";
+    json += mode_;
+
+    json += ",\"pomodoro\":";
+    json += "{";
+            json += "\"workTime\":";
+            json += workTime_;
+            json += ",\"restTime\":";
+            json += restTime_;
+            json += ",\"roundsLeft\":";
+            json += roundsLeft_;
+            json += ",\"active\":";
+            json += checkPomodoro();
+            json += ",\"timeUntilSwitch\":";
+            json += max((int)(nextSwitch_-millis())/TIME_UNIT,0);
+    json += "}";
+
+    /* json += ",\"colours\":";
+     json += "{";
+            json += "\"work\":";
+                json += "{";
+                        json += "\"hue\":";
+                        json += colours.rest;
+                json += "}";
+            
+            json += ",\"rest\":";
+            
+    json += "}"; */
+
+    json += "}";
+    return json;
+}
+
 void LightController::onboardOn()
 {
     onboardOn_ = true;               //update the state

@@ -179,16 +179,13 @@ void WiFiController::setUpServer()
         },
         NULL,
         emptyPost);
-    //get the current mode of the device
+    //get the current mode of the device, colours, etc.
     server_.on(
-        "/mode",
+        "/details",
         HTTP_GET,
         [this](AsyncWebServerRequest *request) {
-            //create a JSON
-            char json[50];
-            sprintf(json,"{\"mode\": %d}",lightController_->getMode());
             //send response
-            request->send(200,"application/json",json); //OK
+            request->send(200,"application/json",lightController_->details()); //OK
         },
         NULL,
         emptyPost);

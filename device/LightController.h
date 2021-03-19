@@ -1,7 +1,8 @@
 #pragma once
 #include "variables.h"
 #include <FastLED.h>
-
+#include <Arduino.h>
+#include <string.h>
 enum Mode
 {
     off = 0,
@@ -62,7 +63,8 @@ public:
     //change modes and update counters depending on the time passed
     void updatePomodoro();
     
-
+    //returns a JSON formatted string of details, including current mode, 
+    String details();
     //onboard LED functions for debugging -------------------------
     void onboardOn();
     void onboardOff();
