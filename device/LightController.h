@@ -4,30 +4,31 @@
 
 enum Mode
 {
-    off=0,
-    work=1,
-    rest=2
+    off = 0,
+    work = 1,
+    rest = 2
 };
 
-//the current state of the LEDs
-struct State
-{
-    bool onboardOn = false;
-    char brightness = 64;
-    Mode mode = work;
-    CRGBPalette16 currentPalette;
-    TBlendType currentBlending;
-};
+
+
 
 //a class that implements a set of functions for controlling the lights
 class LightController
 {
 private:
-    State state;
-    CRGB leds[NUM_LEDS];
+    //controller state
+    CRGB leds_[NUM_LEDS];
+    bool onboardOn_ = false;
+    char brightness_ = 64;
+    Mode mode_ = work;
+    //pomodoro state
+    int workTime_ = POMODORO_WORK;
+    int restTime_ = POMODORO_REST;
+    int roundsLeft_ = 0;
+    long nextSwitch_;
+    
     //void fillFromPalette();
-    void fillStatic(CRGB);//put the given colour to all of the leds (FastLED.show() must be called separately)
-    void setMode(Mode);
+    void fillStatic_(CRGB); //put the given colour to all of the leds (FastLED.show() must be called separately)
 
 public:
     Colours colours;
@@ -42,16 +43,27 @@ public:
 
     //show a given colour
     void updateColour(CRGB);
-    
+
     //switch between the modes
     void ledOff();
     void ledRest();
     void ledWork();
 
+    Mode getMode() { return mode_; }; //getter
 
-    Mode getMode(){return state.mode;};//getter
+    //pomodoro functions -----------------------------------------
+    void setPomodoroTimes(int workTime = POMODORO_WORK, int restTime = POMODORO_REST);
+    //start pomodoro for a given number of rounds
+    void startPomodoro(int rounds = POMODORO_ROUNDS);
+    
+    void stopPomodoro();
+    //check if the pomodoro is still active
+    bool checkPomodoro();
+    //change modes and update counters depending on the time passed
+    void updatePomodoro();
+    
 
-    //use the onboard LED
+    //onboard LED functions for debugging -------------------------
     void onboardOn();
     void onboardOff();
     void onboardToggle();

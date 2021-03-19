@@ -69,6 +69,40 @@ void WiFiController::setUpServer()
                 request->send(400);//Bad request
             };
         });
+    //start pomodoro {"workTime":int,"restTime":int,"rounds":int}
+    server_.on(
+        "/pomodoro",
+        HTTP_POST,
+        emptyGet,
+        NULL,
+        [this](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {
+            
+            StaticJsonDocument<200> doc; //initialise JSON
+            //parse the JSON and check for errors
+            if (!deserializeJson(doc, data))
+            {
+                //read the values
+                int wt = doc["workTime"];
+                int rt = doc["restTime"];
+                int rounds = doc["rounds"];
+                
+                //
+                lightController_->setPomodoroTimes(wt,rt);
+                //
+                lightController_->startPomodoro(rounds);
+
+                //print to serial
+                char msg[100];
+                sprintf(msg,"Starting pomodoro for %d rounds of %d minutes of work and %d minutes of rest",rounds,wt,rt);
+                Serial.println(msg);
+                request->send(200);//OK
+            }
+            else
+            {
+                Serial.println("error parsing the JSON");
+                request->send(400);//Bad request
+            };
+        });
 
     //change the colour of the work mode
     server_.on(
@@ -128,6 +162,7 @@ void WiFiController::setUpServer()
         "/W",
         HTTP_GET,
         [this](AsyncWebServerRequest *request) {
+            lightController_->stopPomodoro();
             lightController_->ledWork();
             request->send(200); //OK
         },
@@ -138,6 +173,7 @@ void WiFiController::setUpServer()
         "/R",
         HTTP_GET,
         [this](AsyncWebServerRequest *request) {
+            lightController_->stopPomodoro();
             lightController_->ledRest();
             request->send(200); //OK
         },

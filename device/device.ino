@@ -21,4 +21,7 @@ void setup()
 
 //this is the main loop of the program
 void loop()
-{      }
+{   
+    lightController.updatePomodoro();
+    delay(100);
+}

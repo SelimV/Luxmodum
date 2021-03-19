@@ -5,6 +5,13 @@
 #define LED_DATA 32
 #define LED_BUILTIN 2
 
+//default pomodoro parameters
+#define POMODORO_WORK 25
+#define POMODORO_REST 5
+#define POMODORO_ROUNDS 4
+//times in minutes: 60000 millisecond in a minute
+#define TIME_UNIT 600 
+
 //default colours for the modes
 struct Colours{
     CRGB off=CHSV(0x00,0x00,0x00);

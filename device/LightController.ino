@@ -18,19 +18,19 @@ LightController::LightController()
 }  */
 
 //put the given colour to all of the leds (FastLED.show() must be called separately)
-void LightController::fillStatic(CRGB colour)
+void LightController::fillStatic_(CRGB colour)
 {
     for (int i = 0; i < NUM_LEDS; ++i)
     {
-        leds[i] = colour;
+        leds_[i] = colour;
     }
 }
 
 void LightController::start()
 {
     //add LEDs to the FastLED
-    FastLED.addLeds<LED_TYPE, LED_DATA, COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
-    FastLED.setBrightness(state.brightness);
+    FastLED.addLeds<LED_TYPE, LED_DATA, COLOR_ORDER>(leds_, NUM_LEDS).setCorrection(TypicalLEDStrip);
+    FastLED.setBrightness(brightness_);
 
     ledRest();
 
@@ -42,58 +42,95 @@ void LightController::start()
 
 void LightController::changeBrightness(int b)
 {
-    state.brightness += b;
-    FastLED.setBrightness(state.brightness);
+    brightness_ += b;
+    FastLED.setBrightness(brightness_);
     FastLED.show();
 }
 
 void LightController::updateColour(CRGB colour)
 {
-    fillStatic(colour);
+    fillStatic_(colour);
     FastLED.show();
-}
-
-void LightController::setMode(Mode mode){
-    state.mode=mode;
 }
 
 //switch between the modes
 void LightController::ledOff()
 {
-    setMode(off);
-    fillStatic(colours.off);
+    mode_ = off;
+    fillStatic_(colours.off);
     FastLED.show();
 }
 void LightController::ledRest()
 {
-    setMode(rest);
-    fillStatic(colours.rest);
+    mode_ = rest;
+    fillStatic_(colours.rest);
     FastLED.show();
 }
 void LightController::ledWork()
 {
-    setMode(work);
-    fillStatic(colours.work);
+    mode_ = work;
+    fillStatic_(colours.work);
     FastLED.show();
 }
 
+//pomodoro functions -----------------------------------------
+void LightController::setPomodoroTimes(int workTime, int restTime)
+{
+    workTime_ = workTime;
+    restTime_ = restTime;
+}
+void LightController::startPomodoro(int rounds)
+{
+    roundsLeft_ = rounds;
+    ledWork();
+    nextSwitch_ = millis() + workTime_ * TIME_UNIT;
+}
+void LightController::stopPomodoro()
+{
+    ledRest();
+    roundsLeft_ = 0;
+}
+bool LightController::checkPomodoro()
+{
+    return roundsLeft_ > 0;
+}
+void LightController::updatePomodoro()
+{
+    if (checkPomodoro())
+    {
+        if (millis() > nextSwitch_)
+        {
+            if (mode_ == work)
+            {
+                roundsLeft_--;
+                ledRest();
+                nextSwitch_ = millis() + restTime_ * TIME_UNIT;
+            }
+            else
+            {
+                ledWork();
+                nextSwitch_ = millis() + workTime_ * TIME_UNIT;
+            }
+        }
+    }
+}
 
 void LightController::onboardOn()
 {
-    state.onboardOn = true;          //update the state
+    onboardOn_ = true;               //update the state
     digitalWrite(LED_BUILTIN, HIGH); //turn the onboard LED on
 }
 
 void LightController::onboardOff()
 {
-    state.onboardOn = false;        //update the state
+    onboardOn_ = false;             //update the state
     digitalWrite(LED_BUILTIN, LOW); //turn the onboard LED off
 }
 
 void LightController::onboardToggle()
 {
     //check the state and call the function that changes it
-    if (state.onboardOn)
+    if (onboardOn_)
     {
         onboardOff();
     }
