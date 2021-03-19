@@ -4,6 +4,7 @@ LightController::LightController()
 {
     pinMode(LED_BUILTIN, OUTPUT); //set the pin mode for the built-in LED
     pinMode(LED_DATA, OUTPUT);
+    pinMode(BUTTON, INPUT); //set pin mode for button
 }
 
 /* void LightController::fillFromPalette()
@@ -137,5 +138,33 @@ void LightController::onboardToggle()
     else
     {
         onboardOn();
+    }
+}
+
+//button functions----------------------------------
+void LightController::readButton()
+{
+    buttonState = digitalRead(BUTTON);
+    if (buttonState == HIGH)
+    {
+        toggleState();
+        stopPomodoro();
+        delay(200);
+    }
+}
+
+void LightController::toggleState()
+{
+    if (mode_ == off)
+    {
+        ledRest();
+    }
+    else if (mode_ == rest)
+    {
+        ledWork();
+    }
+    else
+    {
+        ledOff();
     }
 }

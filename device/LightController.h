@@ -67,4 +67,9 @@ public:
     void onboardOn();
     void onboardOff();
     void onboardToggle();
+
+    //button functions
+    
+    void readButton();
+    void toggleState();
 };

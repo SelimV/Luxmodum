@@ -23,5 +23,6 @@ void setup()
 void loop()
 {   
     lightController.updatePomodoro();
+    lightController.readButton();
     delay(100);
 }
