@@ -1,7 +1,7 @@
 #include "WiFiController.h"
 
-auto emptyGet = [](AsyncWebServerRequest *request) {};
-auto emptyPost = [](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {};
+auto emptyGet = [](AsyncWebServerRequest *request) { Serial.println("Empty request.");};
+auto emptyPost = [](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) { Serial.println("Empty request.");};
 
 void WiFiController::setUpServer()
 {
@@ -109,9 +109,11 @@ void WiFiController::setUpServer()
         emptyGet,
         NULL,
         [this](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {
+            Serial.println("Trying to set work colour");
             StaticJsonDocument<200> doc;
             if (!deserializeJson(doc, data))
             {
+                
                 int hue = doc["hue"];
                 int saturation = doc["saturation"];
                 int brightness = doc["brightness"];
@@ -189,6 +191,16 @@ void WiFiController::setUpServer()
             sprintf(json,"{\"mode\": %d}",lightController_->getMode());
             //send response
             request->send(200,"application/json",json); //OK
+        },
+        NULL,
+        emptyPost);
+    //get details about mode, pomododoro information and colours
+    server_.on(
+        "/details",
+        HTTP_GET,
+        [this](AsyncWebServerRequest *request) {
+            //send response
+            request->send(200,"application/json",lightController_->details()); //OK
         },
         NULL,
         emptyPost);
