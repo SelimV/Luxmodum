@@ -20,7 +20,7 @@ private:
     //controller state
     CRGB leds_[NUM_LEDS];
     bool onboardOn_ = false;
-    char brightness_ = 64;
+    char brightness_ = 255;
     Mode mode_ = work;
     //pomodoro state
     int workTime_ = POMODORO_WORK;

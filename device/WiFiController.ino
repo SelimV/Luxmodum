@@ -1,7 +1,9 @@
 #include "WiFiController.h"
 
-auto emptyGet = [](AsyncWebServerRequest *request) { Serial.println("Empty request.");};
-auto emptyPost = [](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) { Serial.println("Empty request.");};
+auto emptyGet = [](AsyncWebServerRequest *request) { };
+auto emptyPost = [](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) { };
+
+
 
 void WiFiController::setUpServer()
 {
@@ -101,7 +103,6 @@ void WiFiController::setUpServer()
                 request->send(400); //Bad request
             };
         });
-
     //change the colour of the work mode
     server_.on(
         "/setWcolour",
@@ -113,7 +114,7 @@ void WiFiController::setUpServer()
             StaticJsonDocument<200> doc;
             if (!deserializeJson(doc, data))
             {
-                
+
                 int hue = doc["hue"];
                 int saturation = doc["saturation"];
                 int brightness = doc["brightness"];
@@ -188,9 +189,9 @@ void WiFiController::setUpServer()
         [this](AsyncWebServerRequest *request) {
             //create a JSON
             char json[50];
-            sprintf(json,"{\"mode\": %d}",lightController_->getMode());
+            sprintf(json, "{\"mode\": %d}", lightController_->getMode());
             //send response
-            request->send(200,"application/json",json); //OK
+            request->send(200, "application/json", json); //OK
         },
         NULL,
         emptyPost);
@@ -200,10 +201,27 @@ void WiFiController::setUpServer()
         HTTP_GET,
         [this](AsyncWebServerRequest *request) {
             //send response
-            request->send(200,"application/json",lightController_->details()); //OK
+            request->send(200, "application/json", lightController_->details()); //OK
         },
         NULL,
         emptyPost);
+    //respond to OPTIONS perflights, otherwise not found
+    server_.onNotFound([](AsyncWebServerRequest *request) {
+        if (request->method() == HTTP_OPTIONS)
+        {   
+            Serial.println("HTTP_OPTIONS");
+            request->send(204);
+        }
+        else
+        {
+            Serial.println("unknown request");
+            request->send(404);
+        }
+    });
+    //get rid of CORS errors
+    DefaultHeaders::Instance().addHeader("Access-Control-Allow-Origin", "*");
+    DefaultHeaders::Instance().addHeader("Access-Control-Allow-Headers", "Content-Type, Access-Control-Allow-Headers, X-Requested-With");
+
     //begin the server that listens to incoming connections
     server_.begin();
 }

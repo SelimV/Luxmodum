@@ -15,7 +15,6 @@ class WiFiController
 private:
     AsyncWebServer server_;
     LightController *lightController_;
-
 public:
     WiFiController(): server_(80){};  //constructor: initialise the server at port 80
     ~WiFiController() = default; //destructor
