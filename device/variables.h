@@ -7,8 +7,8 @@
 #define BUTTON 25
 
 //default pomodoro parameters
-#define POMODORO_WORK 25
-#define POMODORO_REST 5
+#define POMODORO_WORK 1500
+#define POMODORO_REST 300
 #define POMODORO_ROUNDS 4
 //times in seconds: 1000 millisecond in a second
 #define TIME_UNIT 1000 

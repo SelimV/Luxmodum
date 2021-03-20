@@ -20,7 +20,7 @@ private:
     //controller state
     CRGB leds_[NUM_LEDS];
     bool onboardOn_ = false;
-    char brightness_ = 255;
+    int masterBrightness_ = 127;
     Mode mode_ = work;
     //pomodoro state
     int workTime_ = POMODORO_WORK;
@@ -39,8 +39,8 @@ public:
     //setup the LEDs, to be called during the setup
     void start();
 
-    //increase the brightness by a given amount
-    void changeBrightness(int);
+    //set the master brightness to a given value
+    void setMasterBrightness(int);
 
     //show a given colour
     void updateColour(CHSV);

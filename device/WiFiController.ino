@@ -1,9 +1,7 @@
 #include "WiFiController.h"
 
-auto emptyGet = [](AsyncWebServerRequest *request) { };
-auto emptyPost = [](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) { };
-
-
+auto emptyGet = [](AsyncWebServerRequest *request) {};
+auto emptyPost = [](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {};
 
 void WiFiController::setUpServer()
 {
@@ -26,15 +24,11 @@ void WiFiController::setUpServer()
         emptyGet,
         NULL,
         [](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {
-            StaticJsonDocument<200> doc;
-            if (!deserializeJson(doc, data))
+            for (size_t i = 0; i < len; i++)
             {
-                const char *name = doc["name"];
-                for (size_t i = 0; i < strlen(name); i++)
-                {
-                    Serial.write(name[i]);
-                }
-            };
+                Serial.write(data[i]);
+            }
+
             Serial.println();
 
             request->send(200); //OK
@@ -62,6 +56,31 @@ void WiFiController::setUpServer()
                 char msg[50];
                 sprintf(msg, "(h,s,b) value updated to ( %d, %d, %d)", hue, saturation, brightness);
                 Serial.println(msg);
+                request->send(200); //OK
+            }
+            else
+            {
+                Serial.println("error parsing the JSON");
+                request->send(400); //Bad request
+            };
+        });
+    //Set the masterBrightness to a value defined in JSON {"masterBrightness":int}
+    server_.on(
+        "/masterBrightness",
+        HTTP_POST,
+        emptyGet,
+        NULL,
+        [this](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {
+            StaticJsonDocument<200> doc; //initialise JSON
+            //parse the JSON and check for errors
+            if (!deserializeJson(doc, data))
+            {
+                //read the values
+                int masterBrightness = doc["masterBrightness"];
+
+                //change the current colour
+                lightController_->setMasterBrightness(masterBrightness);
+
                 request->send(200); //OK
             }
             else
@@ -105,7 +124,7 @@ void WiFiController::setUpServer()
         });
     //change the colour of the work mode
     server_.on(
-        "/setWcolour",
+        "/colourW",
         HTTP_POST,
         emptyGet,
         NULL,
@@ -136,7 +155,7 @@ void WiFiController::setUpServer()
 
     //change the colour of the rest mode
     server_.on(
-        "/setRcolour",
+        "/colourR",
         HTTP_POST,
         emptyGet,
         NULL,
@@ -182,19 +201,29 @@ void WiFiController::setUpServer()
         },
         NULL,
         emptyPost);
-    //get the current mode of the device
+    //Turns the light off (does not turn the device off)
     server_.on(
-        "/mode",
+        "/O",
         HTTP_GET,
         [this](AsyncWebServerRequest *request) {
-            //create a JSON
-            char json[50];
-            sprintf(json, "{\"mode\": %d}", lightController_->getMode());
-            //send response
-            request->send(200, "application/json", json); //OK
+            lightController_->stopPomodoro();
+            lightController_->ledOff();
+            request->send(200); //OK
         },
         NULL,
         emptyPost);
+    //Toggles between the three states, same as the button
+    server_.on(
+        "/T",
+        HTTP_GET,
+        [this](AsyncWebServerRequest *request) {
+            lightController_->stopPomodoro();
+            lightController_->toggleState();
+            request->send(200); //OK
+        },
+        NULL,
+        emptyPost);
+
     //get details about mode, pomododoro information and colours
     server_.on(
         "/details",
@@ -208,7 +237,7 @@ void WiFiController::setUpServer()
     //respond to OPTIONS perflights, otherwise not found
     server_.onNotFound([](AsyncWebServerRequest *request) {
         if (request->method() == HTTP_OPTIONS)
-        {   
+        {
             Serial.println("HTTP_OPTIONS");
             request->send(204);
         }
@@ -226,76 +255,4 @@ void WiFiController::setUpServer()
     server_.begin();
 }
 
-/* void WiFiController::handleClient()
-{
-    //check for incoming connections
-    WiFiClient client = server_.available();
-    if (client)
-    {
-        //read incoming data
-        String line = "";
-        while (client.connected())
-        {
-            //check whether there is data to read
-            if (client.available())
-            {
-                char c = client.read(); //read a byte
-                if (c == '\n')          //if it is new line character
-                {
-                    //if there are two in a row, end of request
-                    if (line.length() == 0)
-                    {
-                        //return OK
-                        client.println("HTTP/1.1 200 OK");
-                        //we are done
-                        break;
-                    }
-                    else
-                    {
-                        //otherwise empty the line
-                        line = "";
-                    }
-                }
-                else if (c != '\r') //ignore these characters
-                {
-                    //add the new character
-                    line += c;
-                }
-                //react to the request
-                handleRequest(line);
-            } //if(client.available())
-        }     //while(client.connected())
-        //close the connection
-        client.stop();
-    } //if(client)
-}
 
- */
-/* void WiFiController::handleRequest(String line)
-{
-    if (line.endsWith("GET /T"))
-    {
-        lightController_->onboardToggle();
-    }
-    else if (line.endsWith("GET /O"))
-    {
-        lightController_->ledOff();
-    }
-    else if (line.endsWith("GET /W"))
-    {
-        lightController_->ledWork();
-    }
-    else if (line.endsWith("GET /R"))
-    {
-        lightController_->ledRest();
-    }
-    else if (line.endsWith("GET /B"))
-    {
-        lightController_->changeBrightness(0x0F);
-    }
-    else if (line.endsWith("GET /D"))
-    {
-        lightController_->changeBrightness(-0x0F);
-    }
-}
- */

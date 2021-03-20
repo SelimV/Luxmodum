@@ -32,7 +32,7 @@ void LightController::start()
 {
     //add LEDs to the FastLED
     FastLED.addLeds<LED_TYPE, LED_DATA, COLOR_ORDER>(leds_, NUM_LEDS).setCorrection(TypicalLEDStrip);
-    FastLED.setBrightness(brightness_);
+    FastLED.setBrightness(masterBrightness_);
 
     ledRest();
 
@@ -42,23 +42,17 @@ void LightController::start()
     FastLED.show(); */
 }
 
-void LightController::changeBrightness(int b)
+void LightController::setMasterBrightness(int b)
 {
-    brightness_ += b;
-    delay(10);
-    FastLED.setBrightness(brightness_);
-    delay(10);
+    masterBrightness_  =b;
+    FastLED.setBrightness(masterBrightness_);
     FastLED.show();
-    delay(10);
 }
 
 void LightController::updateColour(CHSV colour)
 {
-    delay(10);
     fillStatic_(colour);
-    delay(10);
     FastLED.show();
-    delay(10);
 }
 
 //switch between the modes
@@ -136,6 +130,8 @@ String LightController::details(){
     String json("{");
     json += "\"mode\":";
     json += mode_;
+    json += ",\"masterBrightness\":";
+    json += masterBrightness_;
 
     json += ",\"pomodoro\":";
     json += "{";
